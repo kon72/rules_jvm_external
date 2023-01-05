@@ -38,7 +38,7 @@ _install = tag_class(
 
         # What do we fetch?
         "fetch_javadoc": attr.bool(default = False),
-        "fetch_sources": attr.bool(default = True),
+        "fetch_sources": attr.bool(default = False),
 
         # Controlling visibility
         "strict_visibility": attr.bool(
@@ -206,7 +206,7 @@ def _maven_impl(mctx):
                 to_add.update({"neverlink": artifact.neverlink})
 
             if artifact.testonly:
-                to_add.update({"version": artifact.testonly})
+                to_add.update({"testonly": artifact.testonly})
 
             if artifact.exclusions:
                 artifact_exclusions = []
@@ -242,7 +242,7 @@ def _maven_impl(mctx):
                     ))
                 repo["lock_file"] = install.lock_file
 
-            repo["excluded_artifacts"] = _add_exclusions(exclusions, install.excluded_artifacts)
+            repo["excluded_artifacts"] = repo.get("excluded_artifacts", []) + _add_exclusions(exclusions, install.excluded_artifacts)
 
             _logical_or(repo, "fail_if_repin_required", False, install.fail_if_repin_required)
             _logical_or(repo, "fail_on_missing_checksum", False, install.fail_on_missing_checksum)
